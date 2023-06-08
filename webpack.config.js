@@ -13,15 +13,15 @@ module.exports = (env, argv) => {
         output: {
             filename: "bundle.js",
             path: path.resolve(__dirname, "dist"),
-            publicPath: "/",
         },
 
         devServer: {
-            contentBase: path.resolve(__dirname, "dist"),
-            compress: true,
+            historyApiFallback: true,
             port: 3000,
-            open: true,
             hot: false,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+            },
         },
 
         plugins: [
