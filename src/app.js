@@ -86,14 +86,15 @@ class JSONFIELDS {
         const InputCheckbox = document.createElement("input");
         const BtnRemove = document.createElement("button");
         const BtnAddNested = document.createElement("button");
-        const valueObject = typeof value === "object";
+        const isArray = Array.isArray(value);
+        const isObject = typeof value === "object" && !isArray;
 
         // Set Wrap element
         Wrap.classList.add("input-group");
-        if (valueObject) Wrap.classList.add("just-key");
+        if (isObject) Wrap.classList.add("just-key");
 
         // Set Checkbox input element
-        if (valueObject) InputCheckbox.checked = true;
+        if (isObject) InputCheckbox.checked = true;
         InputCheckbox.type = "checkbox";
         InputCheckbox.title = "Just key";
         InputCheckbox.addEventListener("change", (e) => this.CheckboxAction(e));
@@ -108,13 +109,28 @@ class JSONFIELDS {
         Wrap.appendChild(InputKey);
 
         // Set Input value
-        InputValue.type = "text";
-        InputValue.name = "value";
-        InputValue.value = !valueObject ? value : "";
-        InputValue.classList.add("form-control");
-        if (valueObject) InputValue.classList.add("hide");
-        InputValue.placeholder = "Write value of property";
-        Wrap.appendChild(InputValue);
+        if (isArray) {
+            const ContentInputValue = document.createElement("div");
+            ContentInputValue.classList.add("array-list");
+
+            value.forEach((val) => {
+                const InputItem = document.createElement("input");
+                InputItem.type = "text";
+                InputItem.readOnly = true;
+                InputItem.value = val;
+                ContentInputValue.appendChild(InputItem);
+            });
+
+            Wrap.appendChild(ContentInputValue);
+        } else {
+            InputValue.type = "text";
+            InputValue.name = "value";
+            InputValue.value = !isObject ? value : "";
+            InputValue.classList.add("form-control");
+            if (isObject) InputValue.classList.add("hide");
+            InputValue.placeholder = "Write value of property";
+            Wrap.appendChild(InputValue);
+        }
 
         // Set Button add nested element
         BtnAddNested.type = "button";
@@ -228,8 +244,9 @@ class JSONFIELDS {
         let index = 0;
 
         for (let key in data) {
-            let value = data[key];
-            let isObject = typeof value === "object";
+            const value = data[key];
+            const isObject = typeof value === "object";
+            const isArray = Array.isArray(value);
 
             // Get path keys
             let keypath = prevKey ? `${prevKey}.${key}` : key;
@@ -243,7 +260,7 @@ class JSONFIELDS {
 
             index++;
 
-            if (isObject) this.eachData(value, keypath);
+            if (isObject && !isArray) this.eachData(value, keypath);
         }
     }
 
