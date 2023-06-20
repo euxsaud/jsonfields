@@ -38,9 +38,12 @@ class JSONFIELDS {
                 display: grid;
                 grid-template-columns: 50px 0.6fr 1fr 50px 50px;
                 grid-template-rows: 1fr;
+                align-items: start;
+                justify-items: stretch;
                 margin-top: 10px;
                 position: relative;
             }
+
             .jsonfields-contentForm .input-group.hide {
                 display: none !important;
             }
@@ -50,6 +53,41 @@ class JSONFIELDS {
             .jsonfields-contentForm .input-group.just-key input:nth-child(3) {
                 display: none;
             }
+
+            .jsonfields-contentForm .input-group .array-list {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .jsonfields-contentForm .input-group .array-list > input {
+                width: 100%;
+            }
+            .jsonfields-contentForm .input-group .array-list .chip {
+                display: inline-block;
+                padding: 3px 7px;
+                margin: 2px;
+                border-radius: 50px;
+                background: #bdc3c7;
+                color: white;
+            }
+            .jsonfields-contentForm .input-group .array-list .chip button {
+                padding: 0px 4px 1px 4px;
+                position: relative;
+                left: 2px;
+                border-radius: 50px;
+                border: none;
+                background: none;
+                color: white;
+                cursor: pointer;
+            }
+            .jsonfields-contentForm .input-group .array-list .chip button:hover {
+                background: rgba(0, 0, 0, 0.3)
+            }
+
+            .jsonfields-contentForm .input-group > button{
+                width: 30px;
+                height: 30px;
+                justify-self: center;
+             }
         `;
     }
 
@@ -83,6 +121,7 @@ class JSONFIELDS {
         const Wrap = document.createElement("div");
         const InputKey = document.createElement("input");
         const InputValue = document.createElement("input");
+        let InputValueArray = undefined;
         const InputCheckbox = document.createElement("input");
         const BtnRemove = document.createElement("button");
         const BtnAddNested = document.createElement("button");
@@ -110,18 +149,8 @@ class JSONFIELDS {
 
         // Set Input value
         if (isArray) {
-            const ContentInputValue = document.createElement("div");
-            ContentInputValue.classList.add("array-list");
-
-            value.forEach((val) => {
-                const InputItem = document.createElement("input");
-                InputItem.type = "text";
-                InputItem.readOnly = true;
-                InputItem.value = val;
-                ContentInputValue.appendChild(InputItem);
-            });
-
-            Wrap.appendChild(ContentInputValue);
+            InputValueArray = this.ArrayStructure();
+            Wrap.appendChild(InputValueArray.build(value));
         } else {
             InputValue.type = "text";
             InputValue.name = "value";
@@ -135,9 +164,15 @@ class JSONFIELDS {
         // Set Button add nested element
         BtnAddNested.type = "button";
         BtnAddNested.classList.add("btn-add-nestedElem");
-        BtnAddNested.title = "Add nested property";
+        BtnAddNested.title = isArray ? "Add property" : "Add nested property";
         BtnAddNested.innerHTML = "<span></span>";
-        BtnAddNested.addEventListener("click", (e) => this.AddProperty(e.currentTarget, true));
+        BtnAddNested.addEventListener("click", (e) => {
+            if (isArray) {
+                InputValueArray.addChip();
+            } else {
+                this.AddProperty(e.currentTarget, true);
+            }
+        });
         Wrap.appendChild(BtnAddNested);
 
         // Set Button remove element
@@ -150,6 +185,63 @@ class JSONFIELDS {
 
         // Return the wrap with all the elements
         return Wrap;
+    }
+
+    // Method to build an especial stucture when the value is an Array
+    ArrayStructure() {
+        return {
+            Parent: document.createElement("div"),
+            InputValue: undefined,
+
+            // Method to add value from main Input to the stock of arraylist.
+            addChip: function (val) {
+                const Value = val || this.InputValue.value;
+                if (!Value) {
+                    alert("It is not possible to add an empty value");
+                    return false;
+                }
+
+                const ChipItem = document.createElement("span");
+                ChipItem.classList.add("chip");
+                ChipItem.innerHTML = `${Value} <button>&#x2716;</button>`;
+
+                const InputItem = document.createElement("input");
+                InputItem.type = "hidden";
+                InputItem.name = "array-value";
+                InputItem.value = Value;
+
+                ChipItem.appendChild(InputItem);
+                this.Parent.appendChild(ChipItem);
+
+                // Method to remove Chip from array list
+                ChipItem.querySelector("button").addEventListener("click", (event) => {
+                    event.currentTarget.parentNode.remove();
+                });
+
+                if (!!this.InputValue.value) this.InputValue.value = null;
+            },
+
+            build: function (value) {
+                this.Parent.classList.add("array-list");
+
+                const InputAddValue = document.createElement("input");
+                InputAddValue.classList.add("form-control");
+                InputAddValue.type = "text";
+                InputAddValue.name = "add-to-array";
+                InputAddValue.placeholder = "Write a new value for the array";
+                this.InputValue = InputAddValue;
+                this.Parent.appendChild(InputAddValue);
+
+                value.forEach((val) => this.addChip(val));
+
+                // Add new Chip keep focusing the input and press the Enter key
+                InputAddValue.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") this.addChip();
+                });
+
+                return this.Parent;
+            },
+        };
     }
 
     // Method that takes care to append new elements in their correct place, handle indexes, and update attributes and properties.
@@ -168,6 +260,7 @@ class JSONFIELDS {
 
     // Method that takes care to create a new property in the JSONFIELDS
     AddProperty(Target, isNested) {
+        console.log(Target, isNested);
         let promptNewKey = prompt("Write key name for the new property");
 
         if (!promptNewKey) {
