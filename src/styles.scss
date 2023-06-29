@@ -5,3 +5,158 @@
     height: auto;
     margin: 0 auto;
 }
+
+$silver: #bdc3c7;
+$midnight: #2c3e50;
+$green: #198754;
+$alizarin: #e74c3c;
+.jsonfields-container {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    padding: 10px;
+    border: 1px solid $silver;
+    border-radius: 10px;
+
+    .jsonfields-addProperty {
+        display: flex;
+        justify-content: center;
+    }
+
+    button[class*="jfBtn"] {
+        display: block;
+        width: auto;
+        height: auto;
+        border: none;
+        padding: 4px 7px;
+        border-radius: 3px;
+
+        &.lg {
+            font-size: 1.2rem;
+            padding: 8px 14px;
+        }
+    }
+    .jfBtn-success, .btn-success {
+        background-color: $green;
+        color: white;
+        svg { fill: white !important; }
+    }
+    .jfBtn-danger, .btn-danger {
+        background-color: $alizarin;
+        color: white;
+        svg { fill: white !important; }
+    }
+
+    .jsonfields-contentForm {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+
+        .jf-group {
+            display: grid;
+            grid-template-columns: 90px 0.6fr 1fr 50px 50px;
+            grid-template-rows: 1fr;
+            align-items: start;
+            justify-items: stretch;
+            column-gap: 10px;
+            margin-top: 10px;
+            position: relative;
+
+            &.hide {
+                display: none !important;
+            }
+
+            .jfChip { display: none; }
+
+            .jf-formCtrl {
+                display: block;
+                width: calc(100% - 1.4rem);
+                padding: 0.3rem 0.7rem;
+                border: 1px solid $silver;
+                border-radius: 0.4rem;
+            }
+
+            .jf-radiosWrap {
+                display: flex;
+                justify-content: space-between;
+                
+                input {
+                    display: none;
+                    &:checked + label{
+                        background-color: $silver;
+                        color: $midnight;
+                    }
+                }
+                label {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 30px;
+                    height: 30px;
+                    text-align: center;
+                    border-radius: 3px;
+                    cursor: pointer;
+                }
+            }
+
+            button[class*="jfBtn"] {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+            }
+
+            & > button:nth-of-type(1) {
+                cursor: pointer;
+                &.btn {
+                    display: flex;
+                    justify-content: center;
+                }
+            }
+
+            &.object-profile {
+                input[name="key"] {grid-column: 2 / span 2;}
+                .jfValueContent { display: none; }
+            }
+            &.array-profile {
+                .jfValueContent {
+                    display: flex;
+                    flex-wrap: wrap;
+
+                    & > input {
+                        margin-bottom: 5px;
+                    }
+                }
+                .jfChip {
+                    display: flex;
+                    align-items: center;
+                    padding: 3px 7px 2px 7px;
+                    margin: 2px;
+                    border-radius: 50px;
+                    background-color: $silver;
+                    font-size: 0.75rem;
+
+                    & a {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 18px;
+                        height: 18px;
+                        margin-left: 5px;
+                        padding: 2px;
+                        border-radius: 50%;
+                        border: none;
+                        background: none;
+                        color: white;
+                        cursor: pointer;
+
+                        &:hover {
+                            background: rgba(black, 0.3);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

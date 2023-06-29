@@ -3,6 +3,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (env, argv) => {
     const { mode } = argv;
@@ -30,6 +31,8 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
             }),
+
+            new MiniCssExtractPlugin(),
         ],
 
         module: {
@@ -43,7 +46,7 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.scss$/,
-                    use: ["style-loader", "css-loader", "sass-loader"],
+                    use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
                 },
             ],
         },

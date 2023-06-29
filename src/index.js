@@ -1,54 +1,38 @@
 import jsonfields from "./app.js";
 import "./styles.scss";
 
-async function pokemonAPI() {
-    var Request = await fetch("https://pokeapi.co/api/v2/pokemon/1").then((resp) => resp.json());
-
-    // console.log(Request);
-
-    Request = {
-        id: Request.id,
-        name: Request.name,
-        type: Request.types.map((type) => type.type.name).join(", "),
-        mail_settings: {
-            host: "titan.mail.com",
-            port: 403,
-            nested_settings: {
-                pola: "dot saksaksd ",
-                nested_settings_2: {
-                    val: 123323432,
-                },
-            },
-            email: "admin@eutiximo.com",
-            other_settings: {
-                set1: "Lorem ipsum",
-                dior: "123012-091-023",
-            },
-        },
-        none: "no se que poner",
-    };
-
-    const JSONFIELDSx = new jsonfields("#app", Request);
-
-    getJSON.addEventListener("click", () => {
-        JSONFIELDSx.submit();
-    });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Document loaded");
+    // Agregar bootstrap al elemento al precionar una convinacion de teclas
+    const Bootstrap = document.createElement("link");
+    Bootstrap.rel = "stylesheet";
+    Bootstrap.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
+    if (sessionStorage.bootstrap) document.head.appendChild(Bootstrap);
+    document.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.shiftKey && event.key === "!") {
+            sessionStorage.bootstrap = true;
+            window.location.reload();
+        }
+        if (event.ctrlKey && event.shiftKey && event.key === "@") {
+            sessionStorage.removeItem("bootstrap");
+            window.location.reload();
+        }
+    });
 
-    // pokemonAPI();
-    const aaa = new jsonfields("#app", {
-        serbia: {
-            canciones: {
-                satellites: ["cama", "veronica", "satellite"],
-                conciertos: ["CDMX", "Puebla", "Monterrey"],
+    // RUN Method
+    (async function () {
+        const Request = await fetch("https://pokeapi.co/api/v2/pokemon/1").then((resp) => resp.json());
+        // const Request = await fetch("https://jsonplaceholder.typicode.com/todos").then((resp) => resp.json());
+
+        const JsonFields = new jsonfields(
+            {
+                selector: "#app",
+                bootstrapSupport: sessionStorage.hasOwnProperty("bootstrap"),
             },
-        },
-    });
+            Request
+        );
 
-    getJSON.addEventListener("click", () => {
-        console.log(aaa.submit());
-    });
+        getJSON.addEventListener("click", () => {
+            console.log(JsonFields.getJSON());
+        });
+    })();
 });
