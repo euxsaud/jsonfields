@@ -1,5 +1,5 @@
 import jsonfields from "./app.js";
-import "./styles.scss";
+// import "./styles.scss";
 
 document.addEventListener("DOMContentLoaded", () => {
     // Agregar bootstrap al elemento al precionar una convinacion de teclas
@@ -34,5 +34,15 @@ document.addEventListener("DOMContentLoaded", () => {
         getJSON.addEventListener("click", () => {
             console.log(JsonFields.getJSON());
         });
+        updateJF.addEventListener("click", () =>
+            JsonFields.update({
+                guitar: {
+                    color: "black",
+                    brand: "Fender",
+                    strings: 6,
+                    notes: ["E", "A", "D", "G", "B", "E"],
+                },
+            })
+        );
     })();
 });

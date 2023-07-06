@@ -53,13 +53,25 @@ class JSONFIELDS {
         // Return methods
         return {
             getJSON: () => this.BUILD_JSON(),
+            update: (data) => {
+                this.data = data;
+                this.ContainerForm.innerHTML = null;
+                this.eachData(data);
+            },
         };
     }
 
+    // Method that takes care to build the environment where the JsonFields going to install
     BuildEnviroment() {
         const WrapForm = document.createElement("div");
         const WrapBtnAdd = document.createElement("div");
         const StyleTag = document.createElement("style");
+
+        // Append styles
+        StyleTag.setAttribute("type", "text/css");
+        StyleTag.textContent =
+            '.jsonfields-container{display:block;width:100%;height:auto;min-height:200px;padding:10px;}.jsonfields-container .jsonfields-addProperty{display:flex;justify-content:center}.jsonfields-container button[class*="jfBtn"]{display:block;width:auto;height:auto;border:none;padding:4px 7px;border-radius:3px}.jsonfields-container button[class*="jfBtn"].lg{font-size:1.2rem;padding:8px 14px}.jsonfields-container .jfBtn-success,.jsonfields-container .btn-success{background-color:#198754;color:white}.jsonfields-container .jfBtn-success svg,.jsonfields-container .btn-success svg{fill:white !important}.jsonfields-container .jfBtn-danger,.jsonfields-container .btn-danger{background-color:#e74c3c;color:white}.jsonfields-container .jfBtn-danger svg,.jsonfields-container .btn-danger svg{fill:white !important}.jsonfields-container .jsonfields-contentForm{display:block;width:100%;margin-bottom:10px}.jsonfields-container .jsonfields-contentForm .jf-group{display:grid;grid-template-columns:90px 0.6fr 1fr 50px 50px;grid-template-rows:1fr;align-items:start;justify-items:stretch;column-gap:10px;margin-top:10px;position:relative}.jsonfields-container .jsonfields-contentForm .jf-group.hide{display:none !important}.jsonfields-container .jsonfields-contentForm .jf-group .jfChip{display:none}.jsonfields-container .jsonfields-contentForm .jf-group .jf-formCtrl{display:block;width:calc(100% - 1.4rem);padding:0.3rem 0.7rem;border:1px solid #bdc3c7;border-radius:0.4rem}.jsonfields-container .jsonfields-contentForm .jf-group .jf-radiosWrap{display:flex;justify-content:space-between}.jsonfields-container .jsonfields-contentForm .jf-group .jf-radiosWrap input{display:none}.jsonfields-container .jsonfields-contentForm .jf-group .jf-radiosWrap input:checked+label{background-color:#bdc3c7;color:#2c3e50}.jsonfields-container .jsonfields-contentForm .jf-group .jf-radiosWrap label{display:flex;align-items:center;justify-content:center;width:30px;height:30px;text-align:center;border-radius:3px;cursor:pointer}.jsonfields-container .jsonfields-contentForm .jf-group button[class*="jfBtn"]{display:flex;align-items:center;justify-content:center;width:100%}.jsonfields-container .jsonfields-contentForm .jf-group>button:nth-of-type(1){cursor:pointer}.jsonfields-container .jsonfields-contentForm .jf-group>button:nth-of-type(1).btn{display:flex;justify-content:center}.jsonfields-container .jsonfields-contentForm .jf-group.object-profile input[name="key"]{grid-column:2 / span 2}.jsonfields-container .jsonfields-contentForm .jf-group.object-profile .jfValueContent{display:none}.jsonfields-container .jsonfields-contentForm .jf-group.array-profile .jfValueContent{display:flex;flex-wrap:wrap}.jsonfields-container .jsonfields-contentForm .jf-group.array-profile .jfValueContent>input{margin-bottom:5px}.jsonfields-container .jsonfields-contentForm .jf-group.array-profile .jfChip{display:flex;align-items:center;padding:3px 7px 2px 7px;margin:2px;border-radius:50px;background-color:#bdc3c7;font-size:0.75rem}.jsonfields-container .jsonfields-contentForm .jf-group.array-profile .jfChip a{display:flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:5px;padding:2px;border-radius:50%;border:none;background:none;color:white;cursor:pointer}.jsonfields-container .jsonfields-contentForm .jf-group.array-profile .jfChip a:hover{background:rgba(0,0,0,0.3)}';
+        document.querySelector("head").appendChild(StyleTag);
 
         // Add settings Main Container
         this.Container.classList.add("jsonfields-container");
@@ -245,7 +257,7 @@ class JSONFIELDS {
         if (!promptNewKey) {
             alert(this.txt.alertKeyEmpty);
         } else {
-            promptNewKey = promptNewKey.replace(/[\s\.]/g, "");
+            promptNewKey = promptNewKey.replace(/[\s\.]/g, "_");
             const Parent = Target.parentNode;
             const keypath = isNested ? Parent.dataset.keypath : null;
             const newKeypath = isNested ? `${keypath}.${promptNewKey}` : promptNewKey;
@@ -269,6 +281,8 @@ class JSONFIELDS {
                 Sibling: isNested ? Parent : false,
                 keypath: newKeypath,
             });
+
+            if (isNested) Parent.querySelector('.jf-radiosWrap input[value="object"]').click();
         }
     }
 
